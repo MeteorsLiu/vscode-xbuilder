@@ -1,0 +1,12 @@
+.vscode/**
+.vscode-test/**
+client/src/**
+client/tsconfig.json
+scripts/**
+.gitignore
+.git
+*.vsix
+**/*.map
+**/*.ts
+!wasm/**
+wasm/*.bak

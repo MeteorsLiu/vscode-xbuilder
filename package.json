@@ -1,0 +1,105 @@
+{
+  "name": "xbuilder-spx",
+  "displayName": "XBuilder SPX",
+  "description": "SPX language support for XBuilder - powered by XGo Language Server",
+  "version": "0.1.0",
+  "publisher": "MeteorsLiu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goplus/xgolsw"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "xbuilder",
+    "spx",
+    "xgo",
+    "goplus",
+    "language-server",
+    "game-development"
+  ],
+  "main": "./client/out/extension.js",
+  "activationEvents": [
+    "onLanguage:xgo",
+    "workspaceContains:**/*.{spx,gmx,gox}",
+    "workspaceContains:**/gop.mod"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "xgo",
+        "extensions": [
+          ".spx",
+          ".gmx",
+          ".gox"
+        ],
+        "aliases": [
+          "XGo",
+          "xgo",
+          "SPX",
+          "Go+"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "xgo",
+        "scopeName": "source.gop",
+        "path": "./syntaxes/xgo.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "xgo.renameResource",
+        "title": "XGo: Rename Resource",
+        "category": "XGo"
+      },
+      {
+        "command": "xgo.testCompletion",
+        "title": "XGo: Test Completion (Debug)",
+        "category": "XGo"
+      }
+    ],
+    "configuration": {
+      "title": "XGo",
+      "properties": {
+        "xgo.language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "zh"
+          ],
+          "default": "en",
+          "description": "Language for error messages and diagnostics"
+        },
+        "xgo.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "cd client && npm run compile",
+    "watch": "cd client && npm run watch",
+    "postinstall": "cd client && npm install"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.100.0",
+    "typescript": "^5.3.0"
+  }
+}

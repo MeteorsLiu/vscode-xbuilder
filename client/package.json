@@ -1,0 +1,22 @@
+{
+  "name": "xgo-language-client",
+  "description": "VSCode language client for XGo",
+  "version": "0.1.0",
+  "author": "XGo Team",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.100.0",
+    "typescript": "^5.3.0"
+  },
+  "scripts": {
+    "compile": "tsc -b",
+    "watch": "tsc -b -w"
+  }
+}
