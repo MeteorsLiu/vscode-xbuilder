@@ -2,7 +2,7 @@
   "name": "xbuilder-spx",
   "displayName": "XBuilder SPX",
   "description": "SPX language support for XBuilder - powered by XGo Language Server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "MeteorsLiu",
   "license": "MIT",
   "repository": {
