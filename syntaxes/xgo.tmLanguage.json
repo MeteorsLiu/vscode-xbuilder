@@ -310,6 +310,16 @@
 						}
 					},
 					"end": "(?:\\n|$)"
+				},
+				{
+					"name": "comment.line.number-sign.gop",
+					"begin": "(#)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.comment.gop"
+						}
+					},
+					"end": "(?:\\n|$)"
 				}
 			]
 		},
