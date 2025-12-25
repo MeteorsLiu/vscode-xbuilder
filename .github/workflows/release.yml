@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm install
+          cd client && npm install
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Compile extension
+        run: npm run compile
+
+      - name: Package VSIX
+        run: vsce package
+
+      - name: Get package info
+        id: package
+        run: |
+          VSIX_FILE=$(ls *.vsix)
+          VERSION=$(echo $VSIX_FILE | grep -oP '\d+\.\d+\.\d+')
+          echo "vsix_file=$VSIX_FILE" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          if [ -z "${{ github.event.before }}" ]; then
+            # If no previous tag, get all commits
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            # Get commits since last tag
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LAST_TAG" ]; then
+              CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+            else
+              CHANGELOG=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+            fi
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ steps.package.outputs.version }}
+          body: |
+            ## What's Changed
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Installation
+
+            Download the VSIX file below and install it in VS Code:
+            ```bash
+            code --install-extension ${{ steps.package.outputs.vsix_file }}
+            ```
+
+            Or install manually:
+            1. Download the `.vsix` file
+            2. Open VS Code
+            3. Go to Extensions view (Ctrl+Shift+X)
+            4. Click the "..." menu and select "Install from VSIX..."
+            5. Select the downloaded file
+          files: |
+            *.vsix
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.vsix_file }}
+          path: ${{ steps.package.outputs.vsix_file }}
+          retention-days: 90
